@@ -970,8 +970,8 @@ outras funções auxiliares que sejam necessárias.
 \begin{code}
 discollect :: (Ord b, Ord a) => [(b, [a])] -> [(b, a)]
 discollect [] = []
-discollect ((h,[]):t) = discollect t
-discollect ((h,t):x) = set ((h,head(t)):discollect((h,tail(t)):x))
+discollect ((a, x) : y) = [ (a, b) | b <- x] ++ discollect y
+
 
 dic_exp :: Dict -> [(String,[String])]
 dic_exp = collect . tar
@@ -979,38 +979,66 @@ dic_exp = collect . tar
 tar = cataExp g where
   g = either l f 
       where l v = [([],v)]
-            f (o,e) = map((o++) >< id) $ concat e 
+            f (t,ts) = map ((t++) >< id) (concat ts) 
 
-dic_rd = undefined
 
-dic_in = undefined
+ 
+
+--procurar traducoes para uma determinada palavra
+dic_rd :: String -> Dict -> Maybe [String]
+dic_rd s disc = undefined
+
+
+-- inserir palavras novas (palavra e traduc¸ao)
+dic_in :: String -> String -> Dict -> Dict
+dic_in = hyloExp divide conquer where
+          divide = undefined
+          conquer = undefined
+
 
 \end{code}
 
 \subsection*{Problema 2}
 
 \begin{code}
-maisDir = cataBTree g
-  where g = undefined
+--maisDir :: BTree a -> Maybe a
+maisDir = cataBTree (either (const Nothing) g2) where
+      g2 (v,(_,Nothing)) = Just v
+      g2 (v,(l,r)) = r
 
-maisEsq = cataBTree g
-  where g = undefined
+--maisEsq :: BTree a -> Maybe a
+maisEsq = cataBTree (either (const Nothing) f) where 
+            f (a,(Nothing,_)) = Just a
+            f (a,(t1,t2)) = t1
 
+--insOrd' :: (Ord a) => a -> BTree a -> (BTree a, BTree a)
 insOrd' x = cataBTree g 
   where g = undefined
 
-insOrd a x = undefined
+--insOrd :: (Ord a) => a -> BTree a -> BTree a
+insOrd a x = anaBTree f (Just a,x)
+          where f (Nothing,Empty) = i1()
+                f (Just a,Empty) = i2(a,((Nothing,Empty),(Nothing,Empty)))
+                f (Just a,Node (x,(t1,t2))) | a <= x = i2(x,((Just a,t1),(Nothing,t2)))
+                                            | otherwise = i2(x,((Nothing,t1),(Just a,t2)))
+                f (Nothing,Node (x,(t1,t2))) = i2(x,((Nothing,t1),(Nothing,t2)))
 
+
+--isOrd' :: (Ord a) => BTree a -> (Bool, BTree a)
 isOrd' = cataBTree g
   where g = undefined
 
+--isOrd :: (Ord a) => BTree a -> Bool
 isOrd = undefined
 
-
+--rrot :: BTree a -> BTree a
 rrot = undefined
 
+
+--lrot :: BTree a -> BTree a
 lrot = undefined
 
+--splay :: [Bool] -> (BTree a -> BTree a)
 splay l t =  undefined
   
 \end{code}
