@@ -986,14 +986,23 @@ tar = cataExp g where
 
 --procurar traducoes para uma determinada palavra
 dic_rd :: String -> Dict -> Maybe [String]
-dic_rd s disc = undefined
+dic_rd s disc = auxTraduc s (dic_exp disc)
+
+auxTraduc :: String -> [(String,[String])] -> Maybe [String]
+auxTraduc s [] = Nothing
+auxTraduc s (h:t) = if(s == (fst(h))) then Just (snd h) else auxTraduc s t  
 
 
 -- inserir palavras novas (palavra e traduc¸ao)
 dic_in :: String -> String -> Dict -> Dict
-dic_in = hyloExp divide conquer where
-          divide = undefined
-          conquer = undefined
+dic_in p t disc = dic_imp (inserePalavra p t (dic_exp disc))
+
+
+inserePalavra :: String -> String ->[(String,[String])] ->[(String,[String])]
+inserePalavra p t [] = [(p,[t])]
+inserePalavra p s (h:t) | p == fst(h) = (p,sort((snd h)++[s])):t
+                        | p < fst(h) = h:(p,[s]):t
+                        | otherwise = h:inserePalavra p s t
 
 
 \end{code}
