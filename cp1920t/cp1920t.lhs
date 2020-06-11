@@ -1001,7 +1001,7 @@ dic_in p t disc = dic_imp (inserePalavra p t (dic_exp disc))
 inserePalavra :: String -> String ->[(String,[String])] ->[(String,[String])]
 inserePalavra p t [] = [(p,[t])]
 inserePalavra p s (h:t) | p == fst(h) = (p,sort((snd h)++[s])):t
-                        | p < fst(h) = h:(p,[s]):t
+                        | p < fst(h) = (p,[s]):h:t
                         | otherwise = h:inserePalavra p s t
 
 
@@ -1021,8 +1021,9 @@ maisEsq = cataBTree (either (const Nothing) f) where
             f (a,(t1,t2)) = t1
 
 --insOrd' :: (Ord a) => a -> BTree a -> (BTree a, BTree a)
-insOrd' x = cataBTree g 
-  where g = undefined
+insOrd' x = cataBTree (either g1 g2) where 
+        g1 = undefined
+        g2 = undefined
 
 --insOrd :: (Ord a) => a -> BTree a -> BTree a
 insOrd a x = anaBTree f (Just a,x)
@@ -1038,7 +1039,8 @@ isOrd' = cataBTree g
   where g = undefined
 
 --isOrd :: (Ord a) => BTree a -> Bool
-isOrd = undefined
+isOrd = cataBTree (either (const True) g2) where  
+          g2 = undefined
 
 --rrot :: BTree a -> BTree a
 rrot = undefined
@@ -1056,23 +1058,37 @@ splay l t =  undefined
 
 \begin{code}
 extLTree :: Bdt a -> LTree a
-extLTree = cataBdt g where
-  g = undefined
+extLTree = cataBdt (either g1 g2) where
+    g1 (a) = Leaf a
+    g2 (s,(l,r)) = Fork (l,r) 
 
-inBdt = undefined
+--data Bdt a = Dec a | Query (String,(Bdt a, Bdt a)) 
+inBdt :: Either (a) (String,(Bdt a, Bdt a)) -> Bdt a  
+inBdt = either Dec Query
 
-outBdt = undefined
+outBdt :: Bdt a -> Either a (String,(Bdt a,Bdt a))
+outBdt (Dec a) = i1 a
+outBdt (Query (a,(t1,t2))) = i2 (a,(t1,t2))
 
-baseBdt = undefined
-recBdt = undefined
+-- nao tenho a certeza se esta bem -> rever
+baseBdt g f = g -|- (id >< (f><f))
 
-cataBdt = undefined
+recBdt g = baseBdt id g
 
-anaBdt = undefined
+cataBdt g = g . (recBdt (cataBdt g)) . outBdt  
 
+anaBdt g = inBdt .  (recBdt (anaBdt g)) . g
+
+-- a estourar bastante great!
 navLTree :: LTree a -> ([Bool] -> LTree a)
-navLTree = cataLTree g 
-  where g = undefined
+navLTree = undefined
+--navLTree = cataLTree (either g1 g2) 
+  --where g1 a l = Leaf a
+    --    g2 s@(l,r) [] = (Fork(l,r)) 
+      --  g2 (l,r) (h:t) | h == True = l
+        --               | otherwise = r
+
+
 \end{code}
 
 
