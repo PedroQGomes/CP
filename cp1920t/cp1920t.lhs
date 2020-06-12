@@ -1071,7 +1071,7 @@ outBdt (Dec a) = i1 a
 outBdt (Query (a,(t1,t2))) = i2 (a,(t1,t2))
 
 -- nao tenho a certeza se esta bem -> rever
-baseBdt g f = g -|- (id >< (f><f))
+baseBdt g f = id -|- (g >< (f><f))
 
 recBdt g = baseBdt id g
 
@@ -1081,14 +1081,15 @@ anaBdt g = inBdt .  (recBdt (anaBdt g)) . g
 
 -- a estourar bastante great!
 navLTree :: LTree a -> ([Bool] -> LTree a)
-navLTree = undefined
---navLTree = cataLTree (either g1 g2) 
-  --where g1 a l = Leaf a
-    --    g2 s@(l,r) [] = (Fork(l,r)) 
-      --  g2 (l,r) (h:t) | h == True = l
-        --               | otherwise = r
+navLTree = cataLTree (either g1 g2) 
+  where g1 a _ =  Leaf a
+        g2 (l,r) [] = Fork(l [],r [])
+        g2 (l,r) (h:t) | h == True = l t
+                       | otherwise = r t
+        
 
 
+                       
 \end{code}
 
 
