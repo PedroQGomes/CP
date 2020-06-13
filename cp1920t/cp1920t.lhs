@@ -1043,14 +1043,23 @@ isOrd = cataBTree (either (const True) g2) where
           g2 = undefined
 
 --rrot :: BTree a -> BTree a
-rrot = undefined
+rrot = cataBTree (either g1 g2) where
+        g1 a = Empty
+        g2 (a,(l,r)) = undefined
 
 
 --lrot :: BTree a -> BTree a
-lrot = undefined
+lrot = cataBTree (either g1 g2) where
+        g1 a = Empty
+        g2 (a,(l,r)) = undefined
+
 
 --splay :: [Bool] -> (BTree a -> BTree a)
-splay l t =  undefined
+splay = flip (cataBTree (either g1 g2)) where
+          g1 l a = Empty
+          g2 (a,(l,r)) [] = Node(a,(l [],r []))
+          g2 (a,(l,r)) (h:t) | h == True = l t
+                             | otherwise = r t
   
 \end{code}
 
@@ -1079,7 +1088,7 @@ cataBdt g = g . (recBdt (cataBdt g)) . outBdt
 
 anaBdt g = inBdt .  (recBdt (anaBdt g)) . g
 
--- a estourar bastante great!
+
 navLTree :: LTree a -> ([Bool] -> LTree a)
 navLTree = cataLTree (either g1 g2) 
   where g1 a _ =  Leaf a
@@ -1096,8 +1105,11 @@ navLTree = cataLTree (either g1 g2)
 \subsection*{Problema 4}
 
 \begin{code}
-bnavLTree = cataLTree g
-  where g = undefined
+bnavLTree = cataLTree (either g1 g2)
+  where g1 a _ = Leaf a
+        g2 (l,r) Empty = Fork(l Empty,r Empty)
+        g2 (l,r) (Node(b,(e,d))) | b == True = l e
+                                 | otherwise = r d
 
 
 pbnavLTree = cataLTree g
