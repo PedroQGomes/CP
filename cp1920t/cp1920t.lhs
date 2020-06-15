@@ -1035,28 +1035,40 @@ insOrd a x = anaBTree f (Just a,x)
 
 
 --isOrd' :: (Ord a) => BTree a -> (Bool, BTree a)
-isOrd' = cataBTree g
-  where g = undefined
+isOrd' = cataBTree (either g1 g2)
+  where g1 a = (True,Empty)
+        g2 = undefined
 
 --isOrd :: (Ord a) => BTree a -> Bool
-isOrd = cataBTree (either (const True) g2) where  
-          g2 = undefined
+isOrd = p1 . cataBTree (either (const (True,Empty)) (split (f2 (funcaoCompraracao . Node))(Node . f))) where
+        f = (id >< (p2  >< p2))
+        f2 p (a,(b,c)) = p (f (a,(b,c))) && p1(b) && p1(c)
+
+
+funcaoCompraracao :: (Ord a) => BTree a -> Bool
+funcaoCompraracao (Node(a,(t1,t2))) = (either (const True) ((<= a).p1) (outBTree t1)) && (either (const True) ((> a).p1) (outBTree t2))
 
 --rrot :: BTree a -> BTree a
 rrot = cataBTree (either g1 g2) where
-        g1 a = Empty
-        g2 (a,(l,r)) = undefined
+     g1 a = Empty
+     g2 (r,(Empty,Empty)) = Node (r,(Empty,Empty))
+     g2 (r,(Empty,d)) = Node (r,(Empty,d))
+     g2 (r,(Node(e,(ee,dir)),d)) = Node(e,(ee,Node(r,(dir,d))))
+ 
+
 
 
 --lrot :: BTree a -> BTree a
 lrot = cataBTree (either g1 g2) where
-        g1 a = Empty
-        g2 (a,(l,r)) = undefined
+     g1 a = Empty
+     g2 (r,(Empty,Empty)) = Node (r,(Empty,Empty))
+     g2 (r,(l,Empty)) = Node (r,(l,Empty))
+     g2 (r,(l,Node(d,(e,dd)))) = Node(d,(Node(r,(l,e)),dd))
 
-
+ 
 --splay :: [Bool] -> (BTree a -> BTree a)
 splay = flip (cataBTree (either g1 g2)) where
-          g1 l a = Empty
+          g1 a _ = Empty
           g2 (a,(l,r)) [] = Node(a,(l [],r []))
           g2 (a,(l,r)) (h:t) | h == True = l t
                              | otherwise = r t
