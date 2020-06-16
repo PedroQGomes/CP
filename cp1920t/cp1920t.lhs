@@ -1147,22 +1147,22 @@ janela = InWindow
 truchet :: Int -> Int -> IO ()
 truchet x y = do
   r <- (randomTabuleiro x y)
-  display janela white (Translate (fromIntegral (-40*x)) (fromIntegral(-40*y)) r)
+  display janela white (put (fromIntegral (-40*x),fromIntegral(-40*y)) r)
 
 randomTabuleiro :: Int -> Int -> IO Picture
 randomTabuleiro 0 _ = return (Pictures [])
 randomTabuleiro x y = do
   l <- (randomLinha y)
   t <- (randomTabuleiro (x-1) y)
-  let r = Pictures((Translate 0 (fromIntegral (80*(x-1))) l):[t])
+  let r = Pictures((put (0,fromIntegral (80*(x-1))) l):[t])
   return r
 
 randomLinha :: Int -> IO Picture
 randomLinha 0 =  return (Pictures [])
 randomLinha x = do
   l <- randomLadrilho
-  t <- randomLinha (n-1)
-  let r = Pictures((Translate (fromIntegral (80*(x-1))) 0 l):[t])
+  t <- randomLinha (x-1)
+  let r = Pictures((put (fromIntegral (80*(x-1)),0) l):[t])
   return r
 
 randomLadrilho :: IO Picture
