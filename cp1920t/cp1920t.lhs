@@ -1144,6 +1144,33 @@ janela = InWindow
              (800, 800)       -- window size
              (100,100)        -- window position
 
+main :: IO ()
+main = do
+  r <- (randomTabuleiro 10 10)
+  display janela white (Translate (-400) (-400) r)
+
+randomTabuleiro :: Int -> Int -> IO Picture
+randomTabuleiro 0 _ = return (Pictures [])
+randomTabuleiro x y = do
+  l <- (randomLinha y)
+  t <- (randomTabuleiro (x-1) y)
+  let r = Pictures((Translate 0 (fromIntegral (80*x)) l):[t])
+  return r
+
+randomLinha :: Int -> IO Picture
+randomLinha 0 =  return (Pictures [])
+randomLinha n = do
+  l <- randomLadrilho
+  t <- randomLinha (n-1)
+  let r = Pictures((Translate (fromIntegral (80*n)) 0 l):[t])
+  return r
+
+randomLadrilho :: IO Picture
+randomLadrilho = do
+  l <- permuta [truchet1, truchet2]
+  let r = l!!0
+  return r
+
 ----- defs auxiliares -------------
 
 put  = uncurry Translate 
