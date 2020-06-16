@@ -190,7 +190,8 @@ import GHC.IO.Exception
 import Graphics.Gloss
 import Control.Monad
 import Control.Applicative hiding ((<|>))
-import Exp
+import Exp 
+import Data.Matrix
 \end{code}
 %endif
 
@@ -461,7 +462,7 @@ prop_ord = isOrd . (foldr insOrd Empty)
 
     Começe então por implementar as funções   
 \begin{code}
-rrot :: BTree a -> BTree a
+rrot :: (Eq a) => BTree a -> BTree a
 lrot :: BTree a -> BTree a
 \end{code}
     de rotação à direita e à esquerda.
@@ -1026,35 +1027,35 @@ insOrd' x = cataBTree (either g1 g2) where
         g2 = undefined
 
 --insOrd :: (Ord a) => a -> BTree a -> BTree a
-insOrd a x = anaBTree f (Just a,x)
-          where f (Nothing,Empty) = i1()
-                f (Just a,Empty) = i2(a,((Nothing,Empty),(Nothing,Empty)))
-                f (Just a,Node (x,(t1,t2))) | a <= x = i2(x,((Just a,t1),(Nothing,t2)))
-                                            | otherwise = i2(x,((Nothing,t1),(Just a,t2)))
-                f (Nothing,Node (x,(t1,t2))) = i2(x,((Nothing,t1),(Nothing,t2)))
+insOrd a x = anaBTree g (Just a,x)
+          where g (Nothing,Empty) = i1()
+                g (Just a,Empty) = i2(a,((Nothing,Empty),(Nothing,Empty)))
+                g (Nothing,Node (r,(l,d))) = i2(r,((Nothing,l),(Nothing,d)))
+                g (Just a,Node (r,(l,d)))   | a <= r = i2(r,((Just a,l),(Nothing,d)))
+                                            | otherwise = i2(r,((Nothing,l),(Just a,l)))
 
 
 --isOrd' :: (Ord a) => BTree a -> (Bool, BTree a)
 isOrd' = cataBTree (either g1 g2)
-  where g1 a = (True,Empty)
-        g2 = undefined
+  where g1 a = undefined
+        g2 a = undefined
 
 --isOrd :: (Ord a) => BTree a -> Bool
-isOrd = p1 . cataBTree (either (const (True,Empty)) (split (f2 (funcaoCompraracao . Node))(Node . f))) where
+isOrd = p1 . cataBTree (either (const (True,Empty)) (split (f2 (comparaNodo . Node))(Node . f))) where
         f = (id >< (p2  >< p2))
         f2 p (a,(b,c)) = p (f (a,(b,c))) && p1(b) && p1(c)
 
 
-funcaoCompraracao :: (Ord a) => BTree a -> Bool
-funcaoCompraracao (Node(a,(t1,t2))) = (either (const True) ((<= a).p1) (outBTree t1)) && (either (const True) ((> a).p1) (outBTree t2))
+comparaNodo :: (Ord a) => BTree a -> Bool
+comparaNodo (Node(a,(t1,t2))) = (either (const True) ((<= a).p1) (outBTree t1)) && (either (const True) ((> a).p1) (outBTree t2))
 
 --rrot :: BTree a -> BTree a
 rrot = cataBTree (either g1 g2) where
      g1 a = Empty
      g2 (r,(Empty,Empty)) = Node (r,(Empty,Empty))
      g2 (r,(Empty,d)) = Node (r,(Empty,d))
-     g2 (r,(Node(e,(ee,dir)),d)) = Node(e,(ee,Node(r,(dir,d))))
- 
+     g2 (r,(Node(e,(ee,dir)),d)) | r == e = Node(r,(Node(e,(ee,dir)),d))
+                                 | otherwise = Node(e,(ee,Node(r,(dir,d))))
 
 
 
@@ -1109,7 +1110,6 @@ navLTree = cataLTree (either g1 g2)
                        | otherwise = r t
         
 
-
                        
 \end{code}
 
@@ -1148,7 +1148,11 @@ janela = InWindow
 
 put  = uncurry Translate 
 
--------------------------------------------------
+
+
+
+
+
 \end{code}
 
 %----------------- Fim do anexo com soluções dos alunos ------------------------%
