@@ -1144,10 +1144,10 @@ janela = InWindow
              (800, 800)       -- window size
              (100,100)        -- window position
 
-main :: IO ()
-main = do
-  r <- (randomTabuleiro 10 10)
-  display janela white (Translate (-400) (-400) r)
+truchet :: Int -> Int -> IO ()
+truchet x y = do
+  r <- (randomTabuleiro x y)
+  display janela white (Translate (fromIntegral (-40*(x+2))) (fromIntegral(-40*(y+2))) r)
 
 randomTabuleiro :: Int -> Int -> IO Picture
 randomTabuleiro 0 _ = return (Pictures [])
