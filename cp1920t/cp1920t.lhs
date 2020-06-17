@@ -113,13 +113,13 @@
 
 \begin{center}\large
 \begin{tabular}{ll}
-\textbf{Grupo} nr. & 99 (preencher)
+\textbf{Grupo} 86
 \\\hline
-a11111 & Nome1 (preencher)	
+a84220 & Pedro Miguel Queirós Gomes	
 \\
-a22222 & Nome2 (preencher)	
+a84288 & José Pedro Gomes Rodrigues dos Santos 	
 \\
-a33333 & Nome3 (preencher)	
+a82422 & João Manuel da Silva Queirós 	
 \end{tabular}
 \end{center}
 
@@ -1041,13 +1041,12 @@ isOrd' = cataBTree (either g1 g2)
         g2 a = undefined
 
 --isOrd :: (Ord a) => BTree a -> Bool
-isOrd = p1 . cataBTree (either (const (True,Empty)) (split (f2 (comparaNodo . Node))(Node . f))) where
-        f = (id >< (p2  >< p2))
-        f2 p (a,(b,c)) = p (f (a,(b,c))) && p1(b) && p1(c)
+isOrd Empty = True
+isOrd (Node(a,(Empty,Empty))) = True
+isOrd (Node(a,(Node(e,(l,d)),Empty))) = if e <= a then isOrd (Node(e,(l,d))) else False
+isOrd (Node(a,(Empty,Node(rd,(l,d))))) = if a < rd then isOrd (Node(rd,(l,d))) else False
+isOrd (Node(a,(Node(re,(ee,ed)),Node(rd,(de,dd))))) = if a < rd && re <= a then isOrd (Node(re,(ee,ed))) && isOrd (Node(rd,(de,dd))) else False
 
-
-comparaNodo :: (Ord a) => BTree a -> Bool
-comparaNodo (Node(a,(t1,t2))) = (either (const True) ((<= a).p1) (outBTree t1)) && (either (const True) ((> a).p1) (outBTree t2))
 
 --rrot :: BTree a -> BTree a
 rrot = cataBTree (either g1 g2) where
@@ -1084,7 +1083,7 @@ extLTree = cataBdt (either g1 g2) where
     g1 (a) = Leaf a
     g2 (s,(l,r)) = Fork (l,r) 
 
---data Bdt a = Dec a | Query (String,(Bdt a, Bdt a)) 
+--data Bdt a = Dec a  Query (String,(Bdt a, Bdt a)) 
 inBdt :: Either (a) (String,(Bdt a, Bdt a)) -> Bdt a  
 inBdt = either Dec Query
 
