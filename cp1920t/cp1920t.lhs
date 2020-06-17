@@ -1123,8 +1123,13 @@ bnavLTree = cataLTree (either g1 g2)
                                  | otherwise = r d
 
 
-pbnavLTree = cataLTree g
-  where g = undefined 
+--newtype Dist a = D {unD :: [(a,ProbRep)]}
+--pbnavLTree :: LTree a -> ((BTree (Dist Bool)) -> Dist(LTree a))
+pbnavLTree = cataLTree (either g1 g2)
+  where g1 a _ = D[(Leaf a,1)]
+        g2 (a,b) Empty = (>>=) (prod (a Empty) (b Empty)) (return.Fork)
+        g2 (a,b) (Node (c,(l,r))) = do {final <- c ;if final then a l else b r}
+    
 
 \end{code}
 
